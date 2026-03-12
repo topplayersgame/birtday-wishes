@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Wishes for Dubeis!</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background: linear-gradient(135deg,#ffd1dc,#ffeaa7,#b2fefa);
+  min-height:100vh;
+  overflow-y:auto;
+}
+.card{
+  margin:20px auto;
+  width:90%;
+  max-width:600px;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter:blur(10px);
+  border-radius:25px;
+  padding:35px 25px;
+  text-align:center;
+  box-shadow:0 15px 40px rgba(0,0,0,0.25);
+}
+h1{color:#ff69b4;}
+#wish-container{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+.wish-box{
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(5px);
+  border-radius:20px;
+  padding:15px;
+  text-align:left;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  position:relative;
+  overflow:hidden;
+}
+.sender-name{
+  font-weight:bold;
+  color:#ff3399;
+  margin-bottom:8px;
+}
+.textDiv{margin-bottom:10px;}
+.slide-media{
+  display:block;
+  margin-top:10px;
+  border-radius:15px;
+  animation:slideIn 1s ease forwards;
+  max-width:100%;
+}
+@keyframes slideIn{
+  from{transform:translateX(100%);opacity:0;}
+  to{transform:translateX(0);opacity:1;}
+}
+.heart{
+  position:absolute;
+  font-size:25px;
+  animation:rise 3s linear forwards;
+  pointer-events:none;
+}
+@keyframes rise{
+  0%{opacity:1;transform:translateY(0) scale(1);}
+  100%{opacity:0;transform:translateY(-200px) scale(1.5);}
+}
+.confetti{
+  position:absolute;
+  width:10px;
+  height:10px;
+  top:-10px;
+  border-radius:50%;
+  animation:fall linear infinite;
+}
+@keyframes fall{to{transform:translateY(100vh);}}
+img,video,audio{max-width:100%;border-radius:15px;margin-top:10px;}
+footer{
+  text-align:center;
+  margin-top:25px;
+  font-size:14px;
+  color:#555;
+  font-weight:500;
+}
+
+/* Clean Audio Player */
+.audio-player{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+.audio-player button{
+  border:none;
+  background:#ff69b4;
+  color:white;
+  font-size:18px;
+  border-radius:50%;
+  width:40px;
+  height:40px;
+  cursor:pointer;
+}
+.audio-player input[type="range"]{
+  width:60%;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>Happy Birthday Dubeis! 🎉</h1>
+
+<!-- Audio Player -->
+<div class="audio-player">
+  <button id="playBtn">▶️</button>
+  <input type="range" id="progress" value="0" min="0" max="100">
+</div>
+
+<div id="wish-container"></div>
+<footer>&copy; 2026 Hafiz – FCS Student</footer>
+</div>
+
+<script>
+// Firebase init
+const firebaseConfig = {
+  apiKey: "AIzaSyD9PQyVhN1D-QfaVPC8NPdTdxf39mmK1mI",
+  authDomain: "birthdaywishesdb.firebaseapp.com",
+  databaseURL: "https://birthdaywishesdb-default-rtdb.firebaseio.com",
+  projectId: "birthdaywishesdb",
+  storageBucket: "birthdaywishesdb.firebasestorage.app",
+  messagingSenderId: "661807517185",
+  appId: "1:661807517185:web:7f9df9a0c53a022b093a00",
+  measurementId: "G-MHG0PFFYZ3"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Audio setup
+const audio = new Audio('jisoo.mp3'); // letak nama lagu awak
+const playBtn = document.getElementById('playBtn');
+const progress = document.getElementById('progress');
+
+playBtn.addEventListener('click',()=>{
+  if(audio.paused){
+    audio.play();
+    playBtn.textContent="⏸️";
+  } else{
+    audio.pause();
+    playBtn.textContent="▶️";
+  }
+});
+
+audio.addEventListener('timeupdate',()=>{
+  progress.value = (audio.currentTime/audio.duration)*100;
+});
+
+progress.addEventListener('input',()=>{
+  audio.currentTime = (progress.value/100)*audio.duration;
+});
+
+// Animations
+function spawnHearts(){
+  for(let i=0;i<15;i++){
+    const h=document.createElement('div');
+    h.className='heart';
+    h.style.left=(Math.random()*80+10)+'%';
+    h.style.color=["#ff6f61","#ff69b4","#ffb6c1"][Math.floor(Math.random()*3)];
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),3000);
+  }
+}
+function launchConfetti(){
+  for(let i=0;i<50;i++){
+    const c=document.createElement("div");
+    c.className='confetti';
+    c.style.left=Math.random()*100+"vw";
+    c.style.backgroundColor=["red","blue","yellow","green","pink","purple"][Math.floor(Math.random()*6)];
+    c.style.animationDuration=(Math.random()*3+2)+"s";
+    document.body.appendChild(c);
+  }
+}
+function typeWriter(text,container){
+  container.innerHTML="";
+  let i=0;
+  function type(){
+    if(i<text.length){
+      container.innerHTML+=text.charAt(i);
+      i++;
+      setTimeout(type,40);
+    } else {
+      spawnHearts();
+      launchConfetti();
+    }
+  }
+  type();
+}
+
+// Firebase listener
+const wishContainer=document.getElementById('wish-container');
+db.ref('wishes').on('child_added', snapshot => {
+  const w = snapshot.val();
+  const div = document.createElement('div');
+  div.className='wish-box';
+  wishContainer.appendChild(div);
+
+  // Sender name
+  if(w.sender){
+    const nameDiv=document.createElement('div');
+    nameDiv.className='sender-name';
+    nameDiv.textContent=w.sender;
+    div.appendChild(nameDiv);
+  }
+
+  // Text
+  const textDiv = document.createElement('div');
+  textDiv.className='textDiv';
+  div.appendChild(textDiv);
+  if(w.type==='text'){ typeWriter(w.content, textDiv); }
+  else if(w.text){ typeWriter(w.text, textDiv); }
+
+  // Media / Audio
+  const mediaSrc = w.content || w.media;
+  if(mediaSrc){
+    const mediaDiv = document.createElement('div');
+    div.appendChild(mediaDiv);
+    if(w.type==='audio'){
+      const audioEl = document.createElement('audio');
+      audioEl.src = mediaSrc;
+      audioEl.controls = true;
+      audioEl.className = 'slide-media';
+      mediaDiv.appendChild(audioEl);
+    } else if(mediaSrc.startsWith('data:image')){
+      const img=document.createElement('img');
+      img.src = mediaSrc;
+      img.className='slide-media';
+      mediaDiv.appendChild(img);
+    } else if(mediaSrc.startsWith('data:video')){
+      const vid=document.createElement('video');
+      vid.src = mediaSrc;
+      vid.controls=true;
+      vid.className='slide-media';
+      mediaDiv.appendChild(vid);
+    }
+  }
+});
+</script>
+
+</body>
+</html>
